@@ -65,15 +65,42 @@
   <script>
     const NIGHTSCOUT_URL = 'https://rubensnightscout.herokuapp.com';
 
-    const app = new Framework7({
+    xconst app = new Framework7({
       root: '#app',
       name: "Ruben's Nightscout",
       id: 'com.ruben.nightscout',
       theme: 'auto',
       routes: [
-        { path: '/', componentUrl: 'main.html' },
+        {
+          path: '/',
+          component: {
+            template: `
+              <f7-page name="home">
+                <f7-navbar title="Nightscout"></f7-navbar>
+                <f7-block>
+                  <div class="bg-value" id="bg">--</div>
+                  <div class="delta" id="delta">--</div>
+                  <div class="arrow" id="arrow">⬜</div>
+                  <div class="time-ago" id="time">Loading...</div>
+                </f7-block>
+                <!-- rest of your page content -->
+              </f7-page>
+            `,
+          },
+        },
       ],
     });
+    
+    app.on('page:init', (page) => {
+      if (page.name === 'home') {
+        // Now DOM elements are ready — safe to update UI
+        updateAll();
+
+        // Repeat every minute
+        setInterval(updateAll, 60000);
+      }
+    });
+
   </script>
   <script src="main.js"></script>
 </body>
