@@ -1,7 +1,7 @@
 {
   "name": "Ruben's Nightscout",
   "short_name": "Nightscout",
-  "start_url": ".",
+  "start_url": "/Nightscout-Online/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007aff",
