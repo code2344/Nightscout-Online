@@ -1,0 +1,23 @@
+<template>
+  <f7-page name="home" class="safe-areas">
+    <f7-navbar title="Nightscout" sliding></f7-navbar>
+    <f7-block>
+      <div class="bg-value" id="bg">--</div>
+      <div class="delta" id="delta">--</div>
+      <div class="arrow" id="arrow">⬜</div>
+      <div class="time-ago" id="time">Loading...</div>
+    </f7-block>
+    <f7-block-title>12-Hour Glucose Trend</f7-block-title>
+    <f7-block>
+      <canvas id="bgChart" style="width: 100%; height: 200px;"></canvas>
+    </f7-block>
+    <f7-block-title>Recent Treatments</f7-block-title>
+    <f7-block>
+      <ul id="treatmentList" class="list media-list"></ul>
+    </f7-block>
+    <f7-block-title>Device Status</f7-block-title>
+    <f7-block>
+      <div id="deviceStatus">Loading status...</div>
+    </f7-block>
+  </f7-page>
+</template>
