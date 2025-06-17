@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>F7 Test</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.js"></script>
+  <script>
+    const app = new Framework7({
+      root: '#app',
+      name: 'TestApp',
+      id: 'com.test.app',
+      theme: 'auto',
+      routes: [
+        {
+          path: '/',
+          component: {
+            template: `
+              <f7-page name="home">
+                <f7-navbar title="Test Page"></f7-navbar>
+                <f7-block>
+                  <div id="status">Waiting for page init...</div>
+                </f7-block>
+              </f7-page>
+            `,
+          },
+        },
+      ],
+    });
+
+    app.on('page:init', (page) => {
+      if (page.name === 'home') {
+        console.log('Page init event fired');
+        document.getElementById('status').textContent = 'Page is initialized and DOM elements are ready!';
+      }
+    });
+  </script>
+</body>
+</html>
