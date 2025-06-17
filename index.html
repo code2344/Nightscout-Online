@@ -1,107 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
-  <title>Ruben's Nightscout PWA</title>
-  
-  <!-- Framework7 CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.css"
-  />
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007aff" />
-  
-  <style>
-    body, html {
-      background: #fff;
-      height: 100%;
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    }
-    .bg-value {
-      font-size: 4rem;
-      font-weight: 700;
-      text-align: center;
-      margin-top: 1rem;
-      margin-bottom: 0.25rem;
-    }
-    .delta {
-      text-align: center;
-      color: gray;
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-    }
-    .arrow {
-      font-size: 2rem;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .time-ago {
-      font-size: 1rem;
-      text-align: center;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-    .alert-high {
-      color: #d22;
-    }
-    .alert-low {
-      color: #22d;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Nightscout iOS-style PWA</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    margin: 0; padding: 0; background: #f0f0f5; color: #000;
+  }
+  header {
+    background: #fff;
+    padding: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    position: sticky;
+    top: 0;
+  }
+  main {
+    padding: 1rem;
+  }
+  .card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .bg {
+    font-size: 3rem;
+    font-weight: 700;
+  }
+  .delta {
+    font-size: 1.5rem;
+    color: #555;
+  }
+  .arrow {
+    font-size: 3rem;
+    margin-top: 0.5rem;
+  }
+  .time {
+    margin-top: 1rem;
+    color: #888;
+    font-size: 1rem;
+  }
+</style>
 </head>
 <body>
-  <div id="app"></div>
 
-  <!-- Framework7 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.js"></script>
-  <script>
-    const NIGHTSCOUT_URL = 'https://rubensnightscout.herokuapp.com';
+<header>Nightscout</header>
+<main>
+  <div class="card">
+    <div id="bg" class="bg">-- mmol/L</div>
+    <div id="delta" class="delta">--</div>
+    <div id="arrow" class="arrow">⬜</div>
+    <div id="time" class="time">Loading...</div>
+  </div>
+</main>
 
-    xconst app = new Framework7({
-      root: '#app',
-      name: "Ruben's Nightscout",
-      id: 'com.ruben.nightscout',
-      theme: 'auto',
-      routes: [
-        {
-          path: '/',
-          component: {
-            template: `
-              <f7-page name="home">
-                <f7-navbar title="Nightscout"></f7-navbar>
-                <f7-block>
-                  <div class="bg-value" id="bg">--</div>
-                  <div class="delta" id="delta">--</div>
-                  <div class="arrow" id="arrow">⬜</div>
-                  <div class="time-ago" id="time">Loading...</div>
-                </f7-block>
-                <!-- rest of your page content -->
-              </f7-page>
-            `,
-          },
-        },
-      ],
-    });
-    
-    app.on('page:init', (page) => {
-      if (page.name === 'home') {
-        // Now DOM elements are ready — safe to update UI
-        updateAll();
+<script>
+  const nightscoutUrl = 'https://rubensnightscout.herokuapp.com/api/v1/entries.json?count=1';
 
-        // Repeat every minute
-        setInterval(updateAll, 60000);
-      }
-    });
+  function arrowForDelta(delta) {
+    if (delta > 1) return '⬆️';
+    if (delta < -1) return '⬇️';
+    if (delta > 0) return '↗️';
+    if (delta < 0) return '↘️';
+    return '➡️';
+  }
 
-  </script>
-  <script src="main.js"></script>
+  function updateData() {
+    fetch(nightscoutUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (!data || data.length === 0) {
+          document.getElementById('time').textContent = 'No data found';
+          return;
+        }
+        const entry = data[0];
+        document.getElementById('bg').textContent = entry.sgv + ' mmol/L';
+
+        // Calculate delta if possible (simple example)
+        if (data.length > 1) {
+          const delta = entry.sgv - data[1].sgv;
+          document.getElementById('delta').textContent = (delta > 0 ? '+' : '') + delta.toFixed(1);
+          document.getElementById('arrow').textContent = arrowForDelta(delta);
+        } else {
+          document.getElementById('delta').textContent = '--';
+          document.getElementById('arrow').textContent = '⬜';
+        }
+
+        const date = new Date(entry.date);
+        document.getElementById('time').textContent = date.toLocaleTimeString();
+      })
+      .catch(() => {
+        document.getElementById('time').textContent = 'Error fetching data';
+      });
+  }
+
+  updateData();
+  setInterval(updateData, 60000);
+</script>
+
 </body>
 </html>
