@@ -49,6 +49,9 @@
     font-size: 1rem;
   }
 </style>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#007aff" />
+<link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
 
@@ -63,48 +66,34 @@
 </main>
 
 <script>
-  const nightscoutUrl = 'https://rubensnightscout.herokuapp.com/api/v1/entries.json?count=1';
+  const CACHE_NAME = "nightscout-cache-v2";
+  const STATIC_ASSETS = [
+    "./",
+    "./index.html",
+    "./manifest.json",
+    "./icon-192.png",
+    "./icon-512.png"
+  ];
 
-  function arrowForDelta(delta) {
-    if (delta > 1) return '⬆️';
-    if (delta < -1) return '⬇️';
-    if (delta > 0) return '↗️';
-    if (delta < 0) return '↘️';
-    return '➡️';
-  }
+  self.addEventListener("install", (event) => {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    );
+  });
 
-  function updateData() {
-    fetch(nightscoutUrl)
-      .then(res => res.json())
-      .then(data => {
-        if (!data || data.length === 0) {
-          document.getElementById('time').textContent = 'No data found';
-          return;
-        }
-        const entry = data[0];
-        const mmol = (entry.sgv / 18.0182).toFixed(1);
-        document.getElementById('bg').textContent = mmol + ' mmol/L';
-
-        // Calculate delta if possible (simple example)
-        if (data.length > 1) {
-          const delta = entry.sgv - data[1].sgv;
-          document.getElementById('delta').textContent = (delta > 0 ? '+' : '') + delta.toFixed(1);
-          document.getElementById('arrow').textContent = arrowForDelta(delta);
-        } else {
-          document.getElementById('delta').textContent = '--';
-          document.getElementById('arrow').textContent = '⬜';
-        }
-
-        const date = new Date(entry.date);
-        document.getElementById('time').textContent = date.toLocaleTimeString();
-      })
-      .catch(() => {
-        document.getElementById('time').textContent = 'Error fetching data';
-      });
-  }
-
-  updateData();
-  setInterval(updateData, 60000);
+  self.addEventListener("fetch", (event) => {
+    if (event.request.url.includes("/api/v1/entries")) {
+      event.respondWith(fetch(event.request).catch(() => {
+        return new Response(JSON.stringify([]), {
+          headers: { "Content-Type": "application/json" }
+        });
+      }));
+    } else {
+      event.respondWith(
+        caches.match(event.request).then((res) => res || fetch(event.request))
+      );
+    }
+  });
 </script>
 
 </body>
