@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+  <title>Ruben's Nightscout PWA</title>
+  
+  <!-- Framework7 CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.css"
+  />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007aff" />
+  
+  <style>
+    body, html {
+      background: #fff;
+      height: 100%;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
+    .bg-value {
+      font-size: 4rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .delta {
+      text-align: center;
+      color: gray;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .arrow {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .time-ago {
+      font-size: 1rem;
+      text-align: center;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .alert-high {
+      color: #d22;
+    }
+    .alert-low {
+      color: #22d;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Framework7 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/framework7@7/framework7-bundle.min.js"></script>
+  <script>
+    const NIGHTSCOUT_URL = 'https://rubensnightscout.herokuapp.com';
+
+    const app = new Framework7({
+      root: '#app',
+      name: "Ruben's Nightscout",
+      id: 'com.ruben.nightscout',
+      theme: 'auto',
+      routes: [
+        { path: '/', componentUrl: 'main.html' },
+      ],
+    });
+  </script>
+  <script src="main.js"></script>
+</body>
+</html>
