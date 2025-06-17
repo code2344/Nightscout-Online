@@ -82,7 +82,8 @@
           return;
         }
         const entry = data[0];
-        document.getElementById('bg').textContent = entry.sgv + ' mmol/L';
+        const mmol = (entry.sgv / 18.0182).toFixed(1);
+        document.getElementById('bg').textContent = mmol + ' mmol/L';
 
         // Calculate delta if possible (simple example)
         if (data.length > 1) {
